@@ -19,6 +19,23 @@ def pad(img, h, w):
     left_pad = np.floor((w - img.shape[1]) / 2).astype(np.uint16)
     return np.copy(np.pad(img, ((top_pad, bottom_pad), (left_pad, right_pad), (0, 0)), mode='constant', constant_values=0))
 
+def convole2D_kxk(matrix, kernel):
+    matrix_size = matrix.shape[0]
+    matrix_depth = matrix.shape[2]
+    mat = np.zeros(shape=(matrix_size,matrix_size,matrix_depth))
+    
+
+    #print('---------------matrise----------------')
+    #print(matrix)
+    for i in range(matrix_size):
+        for j in range(matrix_size):
+            mat[j,i,:] = matrix[j,i,:]*kernel[j,i,:]
+    #print('---------------ny matrise---------------')
+    #print(mat)
+
+    return mat
+
+
 def convolve_im(im, kernel,
                 ):
     """ A function that convolves im with kernel
@@ -47,15 +64,25 @@ def convolve_im(im, kernel,
     out_im[pad_size:-pad_size,pad_size:-pad_size,:] = im
     print(out_im.shape)
     print('----------------------')
-    kernel_new_size = np.array([kernel]*image_depth)
-    im_pad = pad(im,image_height,image_width)
-    for y in range(pad_size,image_height_pad-pad_size):
-
-        for x in range(pad_size,image_width_pad-pad_size):
-            out_im[y-kernel_size:y+kernel_size,x-kernel_size:x+kernel_size,:] *= kernel_new_size
-
+  
     
-    #return im
+    kernel_new_size = np.array([kernel]*image_depth)
+    #print(im[0:1,0:4,0:4])
+    #print(kernel_new_size[0:1,0:2,0:2].shape)
+    #print(kernel_new_size)
+    
+    #print(np.flip(kernel_new_size).shape)
+    #im_pad = pad(im,image_height,image_width)
+    for y in range(pad_size,image_height_pad-pad_size):
+        for x in range(pad_size,image_width_pad-pad_size):
+            #print(y)
+            #print(kernel_size)
+            #print(x)
+            #print(out_im[x-pad_size:x+2*pad_size,y-pad_size:y+2*pad_size,:])
+            out_im[x-pad_size:x+pad_size+1,y-pad_size:y+pad_size+1,:] = convole2D_kxk(out_im[x-pad_size:x+pad_size+1,y-pad_size:y+pad_size+1,:],kernel_new_size) 
+    #plt.imshow(out_im[pad_size:-pad_size,pad_size:-pad_size,:])
+    #plt.show()
+    #return out_im[pad_size:-pad_size,pad_size:-pad_size,:]
 
 
 if __name__ == "__main__":
@@ -74,10 +101,10 @@ if __name__ == "__main__":
     ])
 
     # Convolve images
-    im_smoothed = convolve_im(im.copy(), h_b)
-    save_im(output_dir.joinpath("im_smoothed.jpg"), im_smoothed)
+    #im_smoothed = convolve_im(im.copy(), h_b)
+    #save_im(output_dir.joinpath("im_smoothed.jpg"), im_smoothed)
     im_sobel = convolve_im(im, sobel_x)
-    save_im(output_dir.joinpath("im_sobel.jpg"), im_sobel)
+    #save_im(output_dir.joinpath("im_sobel.jpg"), im_sobel)
 
     # DO NOT CHANGE. Checking that your function returns as expected
     assert isinstance(
