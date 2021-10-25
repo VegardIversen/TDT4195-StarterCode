@@ -22,14 +22,15 @@ def pad(img, h, w):
 def convole2D_kxk(matrix, kernel):
     matrix_size = matrix.shape[0]
     matrix_depth = matrix.shape[2]
-    mat = np.zeros(shape=(matrix_size,matrix_size,matrix_depth))
+    mat = np.zeros(shape=(1,1,matrix_depth))
+    #print(mat.shape)
     
 
     #print('---------------matrise----------------')
     #print(matrix)
     for i in range(matrix_size):
         for j in range(matrix_size):
-            mat[j,i,:] = matrix[j,i,:]*kernel[j,i,:]
+            mat[0,0,:] += matrix[j,i,:]*kernel[j,i,:]
     #print('---------------ny matrise---------------')
     #print(mat)
 
@@ -66,6 +67,7 @@ def convolve_im(im, kernel,
     print('----------------------')
   
     
+    #print('----------------------')
     kernel_new_size = np.array([kernel]*image_depth)
     #print(im[0:1,0:4,0:4])
     #print(kernel_new_size[0:1,0:2,0:2].shape)
@@ -79,10 +81,16 @@ def convolve_im(im, kernel,
             #print(kernel_size)
             #print(x)
             #print(out_im[x-pad_size:x+2*pad_size,y-pad_size:y+2*pad_size,:])
-            out_im[x-pad_size:x+pad_size+1,y-pad_size:y+pad_size+1,:] = convole2D_kxk(out_im[x-pad_size:x+pad_size+1,y-pad_size:y+pad_size+1,:],kernel_new_size) 
+            out_im[x,y,:] = convole2D_kxk(out_im[x-pad_size:x+pad_size+1,y-pad_size:y+pad_size+1,:],kernel_new_size)
+            print(out_im[x,y,:])
+          
+    im = out_im[pad_size:-pad_size,pad_size:-pad_size,:]
+    im = im/np.amax(im)
+    im = np.clip(im, 0,1)
     #plt.imshow(out_im[pad_size:-pad_size,pad_size:-pad_size,:])
-    #plt.show()
-    #return out_im[pad_size:-pad_size,pad_size:-pad_size,:]
+    plt.imshow(im)
+    plt.show()
+    return im
 
 
 if __name__ == "__main__":
