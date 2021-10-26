@@ -60,9 +60,11 @@ def convolve_im(im, kernel,
     pad_size = (kernel_size-1)//2
     kernel_flip = np.flip(kernel)
     #creating a empty array with padding
-    out_im = np.zeros(shape=(image_height+2*pad_size,image_width+2*pad_size,image_depth)).astype(float) #this seems to pad it correctly when i show it
+    out_im = np.zeros(shape=(image_height+2*pad_size,image_width+2*pad_size,image_depth)) #this seems to pad it correctly when i show it
+    im_conv = np.zeros(shape=(image_height+2*pad_size,image_width+2*pad_size,image_depth))
     image_height_pad = out_im.shape[0]
     image_width_pad = out_im.shape[1]
+    kernel_flip = np.flip(kernel)
     #fitting the image in the middle, and now I got padding
     out_im[pad_size:-pad_size,pad_size:-pad_size,:] = im
     print(out_im.shape)
@@ -82,15 +84,15 @@ def convolve_im(im, kernel,
                 pix_val = 0.0
                 for n in range(kernel.shape[0]):
                     for k in range(kernel.shape[0]):
-                        pix_val += out_im[x-pad_size,y-pad_size,d]*kernel_flip[n,k]
-                out_im[x,y,d] = pix_val
+                        pix_val += out_im[x-pad_size + n,y-pad_size + k,d]*kernel_flip[n,k]
+                im_conv[x,y,d] = pix_val
         
     
                 #out_im[x,y,d] = convole2D_kxk(out_im[x-pad_size:x+pad_size+1,y-pad_size:y+pad_size+1,d],kernel)
 
                 
     
-    im1 = out_im[pad_size:-pad_size,pad_size:-pad_size,:]
+    im = im_conv[pad_size:-pad_size,pad_size:-pad_size,:]
     #im = im/np.amax(im)
     #im = np.clip(im,0,1)
     #plt.imshow(out_im[pad_size:-pad_size,pad_size:-pad_size,:])
