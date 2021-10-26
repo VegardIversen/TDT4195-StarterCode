@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import pathlib
 import numpy as np
 from utils import read_im, save_im, normalize
+import time
+start_time = time.time()
 output_dir = pathlib.Path("image_solutions")
 output_dir.mkdir(exist_ok=True)
 
@@ -23,18 +25,28 @@ def convole2D_kxk(matrix, kernel):
     matrix_size = matrix.shape[0]
     matrix_depth = matrix.shape[2]
     mat = np.zeros(shape=(1,1,matrix_depth))
-    #print(mat.shape)
+    t = np.zeros(shape=matrix_depth)
+    
     
 
     #print('---------------matrise----------------')
     #print(matrix)
     for i in range(matrix_size):
         for j in range(matrix_size):
-            mat[0,0,:] += matrix[j,i,:]*kernel[j,i,:]
+            #mat[0,0,:] += matrix[j,i,:]*kernel[j,i,:]
+            t += matrix[j,i,:]*kernel[j,i,:]
+    #         print(f't: {t}')
+    #         print('-------------------')
+    #         print(f'mat{mat}')
+    #         print('-------------------')
+    # print(f'mat done{mat.shape}')
+    # print(f'mat done{mat}')
+    return t
+
     #print('---------------ny matrise---------------')
     #print(mat)
 
-    return mat
+    #return mat
 
 
 def convolve_im(im, kernel,
@@ -59,6 +71,7 @@ def convolve_im(im, kernel,
     pad_size = (kernel_size-1)//2
     #creating a empty array with padding
     out_im = np.zeros(shape=(image_height+2*pad_size,image_width+2*pad_size,image_depth)) #this seems to pad it correctly when i show it
+    im_conv = np.zeros(shape=(image_height+2*pad_size,image_width+2*pad_size,image_depth)) 
     image_height_pad = out_im.shape[0]
     image_width_pad = out_im.shape[1]
     #fitting the image in the middle, and now I got padding
@@ -66,30 +79,27 @@ def convolve_im(im, kernel,
     print(out_im.shape)
     print('----------------------')
   
+    kernel_flip = np.flip(kernel)
     
-    #print('----------------------')
-    kernel_new_size = np.array([kernel]*image_depth)
-    #print(im[0:1,0:4,0:4])
-    #print(kernel_new_size[0:1,0:2,0:2].shape)
-    #print(kernel_new_size)
+    kernel_new_size = np.tile(kernel_flip[:,:,None],(1,1,image_depth))
+    
     
     #print(np.flip(kernel_new_size).shape)
     #im_pad = pad(im,image_height,image_width)
     for y in range(pad_size,image_height_pad-pad_size):
         for x in range(pad_size,image_width_pad-pad_size):
-            #print(y)
-            #print(kernel_size)
-            #print(x)
-            #print(out_im[x-pad_size:x+2*pad_size,y-pad_size:y+2*pad_size,:])
-            out_im[x,y,:] = convole2D_kxk(out_im[x-pad_size:x+pad_size+1,y-pad_size:y+pad_size+1,:],kernel_new_size)
-            print(out_im[x,y,:])
+            #print(f'image = {im_conv[x,y,:]}')
+            #print(f'image = {im_conv[x,y,:].shape}')
+            im_conv[x,y,:] = convole2D_kxk(out_im[x-pad_size:x+pad_size+1,y-pad_size:y+pad_size+1,:],kernel_new_size)
+            #break
+        #break
+            
           
-    im = out_im[pad_size:-pad_size,pad_size:-pad_size,:]
-    im = im/np.amax(im)
-    im = np.clip(im, 0,1)
+    im = im_conv[pad_size:-pad_size,pad_size:-pad_size,:]
+   
     #plt.imshow(out_im[pad_size:-pad_size,pad_size:-pad_size,:])
-    plt.imshow(im)
-    plt.show()
+    #plt.imshow(im)
+    #plt.show()
     return im
 
 
@@ -109,10 +119,10 @@ if __name__ == "__main__":
     ])
 
     # Convolve images
-    #im_smoothed = convolve_im(im.copy(), h_b)
-    #save_im(output_dir.joinpath("im_smoothed.jpg"), im_smoothed)
+    im_smoothed = convolve_im(im.copy(), h_b)
+    save_im(output_dir.joinpath("im_smoothed_test.jpg"), im_smoothed)
     im_sobel = convolve_im(im, sobel_x)
-    #save_im(output_dir.joinpath("im_sobel.jpg"), im_sobel)
+    save_im(output_dir.joinpath("im_sobel_test.jpg"), im_sobel)
 
     # DO NOT CHANGE. Checking that your function returns as expected
     assert isinstance(
@@ -127,3 +137,4 @@ if __name__ == "__main__":
     plt.subplot(1, 2, 2)
     plt.imshow(normalize(im_sobel))
     plt.show()
+print("--- %s seconds ---" % (time.time() - start_time))
