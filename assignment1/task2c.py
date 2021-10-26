@@ -58,8 +58,9 @@ def convolve_im(im, kernel,
     kernel_size = kernel.shape[0]
     #finding the size of the padding
     pad_size = (kernel_size-1)//2
+    kernel_flip = np.flip(kernel)
     #creating a empty array with padding
-    out_im = np.zeros(shape=(image_height+2*pad_size,image_width+2*pad_size,image_depth)) #this seems to pad it correctly when i show it
+    out_im = np.zeros(shape=(image_height+2*pad_size,image_width+2*pad_size,image_depth)).astype(float) #this seems to pad it correctly when i show it
     image_height_pad = out_im.shape[0]
     image_width_pad = out_im.shape[1]
     #fitting the image in the middle, and now I got padding
@@ -68,7 +69,7 @@ def convolve_im(im, kernel,
     print('----------------------')
   
     
-    kernel_new_size = np.array([kernel]*image_depth)
+    #kernel_new_size = np.tile(kernel[:,:,None],(1,1,image_depth))
     #print(im[0:1,0:4,0:4])
     #print(kernel_new_size[0:1,0:2,0:2].shape)
     #print(kernel_new_size)
@@ -81,7 +82,7 @@ def convolve_im(im, kernel,
                 pix_val = 0.0
                 for n in range(kernel.shape[0]):
                     for k in range(kernel.shape[0]):
-                        pix_val += out_im[x-pad_size,y-pad_size,d]*kernel[n,k]
+                        pix_val += out_im[x-pad_size,y-pad_size,d]*kernel_flip[n,k]
                 out_im[x,y,d] = pix_val
         
     
@@ -89,13 +90,13 @@ def convolve_im(im, kernel,
 
                 
     
-    im = out_im[pad_size:-pad_size,pad_size:-pad_size,:]
+    im1 = out_im[pad_size:-pad_size,pad_size:-pad_size,:]
     #im = im/np.amax(im)
     #im = np.clip(im,0,1)
     #plt.imshow(out_im[pad_size:-pad_size,pad_size:-pad_size,:])
-    plt.imshow(im)
+    plt.imshow(im1)
     plt.show()
-    return im
+    return im1
 
 
 if __name__ == "__main__":
@@ -114,8 +115,8 @@ if __name__ == "__main__":
     ])
 
     # Convolve images
-    #im_smoothed = convolve_im(im.copy(), h_b)
-    #save_im(output_dir.joinpath("im_smoothed.jpg"), im_smoothed)
+    im_smoothed = convolve_im(im.copy(), h_b)
+    save_im(output_dir.joinpath("im_smoothed.jpg"), im_smoothed)
     im_sobel = convolve_im(im, sobel_x)
     save_im(output_dir.joinpath("im_sobel.jpg"), im_sobel)
 
