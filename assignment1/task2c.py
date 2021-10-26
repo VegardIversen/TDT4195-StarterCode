@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import pathlib
 import numpy as np
 from utils import read_im, save_im, normalize
+import time
+start_time = time.time()
 output_dir = pathlib.Path("image_solutions")
 output_dir.mkdir(exist_ok=True)
 
@@ -95,9 +97,8 @@ def convolve_im(im, kernel,
     #im = im/np.amax(im)
     #im = np.clip(im,0,1)
     #plt.imshow(out_im[pad_size:-pad_size,pad_size:-pad_size,:])
-    plt.imshow(im1)
-    plt.show()
-    return im1
+    
+    return im
 
 
 if __name__ == "__main__":
@@ -117,9 +118,9 @@ if __name__ == "__main__":
 
     # Convolve images
     im_smoothed = convolve_im(im.copy(), h_b)
-    save_im(output_dir.joinpath("im_smoothed.jpg"), im_smoothed)
+    save_im(output_dir.joinpath("im_smoothed_time.jpg"), im_smoothed)
     im_sobel = convolve_im(im, sobel_x)
-    save_im(output_dir.joinpath("im_sobel.jpg"), im_sobel)
+    save_im(output_dir.joinpath("im_sobel_time.jpg"), im_sobel)
 
     # DO NOT CHANGE. Checking that your function returns as expected
     assert isinstance(
@@ -134,3 +135,4 @@ if __name__ == "__main__":
     plt.subplot(1, 2, 2)
     plt.imshow(normalize(im_sobel))
     plt.show()
+print("--- %s seconds ---" % (time.time() - start_time))
