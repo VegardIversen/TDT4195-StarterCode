@@ -64,7 +64,6 @@ def convolve_im(im, kernel,
     out_im = np.zeros(shape=(image_height+2*pad_size,image_width+2*pad_size,image_depth)).astype(float) #this seems to pad it correctly when i show it
     image_height_pad = out_im.shape[0]
     image_width_pad = out_im.shape[1]
-    kernel_flip = np.flip(kernel)
     #fitting the image in the middle, and now I got padding
     out_im[pad_size:-pad_size,pad_size:-pad_size,:] = im
     print(out_im.shape)
