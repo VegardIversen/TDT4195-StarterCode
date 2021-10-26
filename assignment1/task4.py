@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
+from torch.nn.modules import linear
 import tqdm
 import numpy as np
 import utils
@@ -13,13 +14,22 @@ np.random.seed(0)
 
 # Load the dataset and print some stats
 batch_size = 64
-
 image_transform = torchvision.transforms.Compose([
     torchvision.transforms.ToTensor(),
+    
+])
+image_transformN = torchvision.transforms.Compose([
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize(
+        mean=[0.5],
+        std=[0.5],
+    ),
 ])
 
 dataloader_train, dataloader_test = dataloaders.load_dataset(
     batch_size, image_transform)
+dataloader_trainN, dataloader_testN = dataloaders.load_dataset(
+    batch_size, image_transformN)
 example_images, _ = next(iter(dataloader_train))
 print(f"The tensor containing the images has shape: {example_images.shape} (batch size, number of color channels, height, width)",
       f"The maximum value in the image is {example_images.max()}, minimum: {example_images.min()}", sep="\n\t")
@@ -31,7 +41,9 @@ def create_model():
     """
     model = nn.Sequential(
         nn.Flatten(),  # Flattens the image from shape (batch_size, C, Height, width) to (batch_size, C*height*width)
-        nn.Linear(28*28*1, 10)
+        nn.Linear(28*28*1, 64),
+        nn.ReLU(),
+        nn.Linear(8*8*1, 10)
         # No need to include softmax, as this is already combined in the loss function
     )
     # Transfer model to GPU memory if a GPU is available
@@ -52,6 +64,7 @@ assert output.shape == expected_shape,    f"Expected shape: {expected_shape}, bu
 
 # Hyperparameters
 learning_rate = .0192
+#learning_rate = 1
 num_epochs = 5
 
 
@@ -71,24 +84,34 @@ trainer = Trainer(
     loss_function=loss_function,
     optimizer=optimizer
 )
+trainerN = Trainer(
+    model=model,
+    dataloader_train=dataloader_trainN,
+    dataloader_test=dataloader_testN,
+    batch_size=batch_size,
+    loss_function=loss_function,
+    optimizer=optimizer
+)
 train_loss_dict, test_loss_dict = trainer.train(num_epochs)
-
+train_loss_dictN, test_loss_dictN = trainerN.train(num_epochs)
 
 # We can now plot the training loss with our utility script
 
 # Plot loss
 utils.plot_loss(train_loss_dict, label="Train Loss")
 utils.plot_loss(test_loss_dict, label="Test Loss")
+utils.plot_loss(train_loss_dictN, label="Train Loss, normalized")
+utils.plot_loss(test_loss_dictN, label="Test Loss, normalized")
 # Limit the y-axis of the plot (The range should not be increased!)
 plt.ylim([0, 1])
 plt.legend()
 plt.xlabel("Global Training Step")
 plt.ylabel("Cross Entropy Loss")
-plt.savefig("image_solutions/task_4a.png")
+plt.savefig("image_solutions/task_4a_norm_d.png")
 
 plt.show()
 
-torch.save(model.state_dict(), "saved_model.torch")
+torch.save(model.state_dict(), "saved_model_d.torch")
 final_loss, final_acc = utils.compute_loss_and_accuracy(
     dataloader_test, model, loss_function)
 print(f"Final Test loss: {final_loss}. Final Test accuracy: {final_acc}")
@@ -101,6 +124,7 @@ print(f"Final Test loss: {final_loss}. Final Test accuracy: {final_acc}")
 # Lets change a small part of our model: the number of epochs trained (NOTE, use 5 epochs for your experiments in the assignment.)
 
 # We reset the manual seed to 0, such that the model parameters are initialized with the same random number generator.
+'''
 torch.random.manual_seed(0)
 np.random.seed(0)
 
@@ -149,3 +173,4 @@ torch.save(model.state_dict(), "saved_model.torch")
 final_loss, final_acc = utils.compute_loss_and_accuracy(
     dataloader_test, model, loss_function)
 print(f"Final Test loss: {final_loss}. Final Test accuracy: {final_acc}")
+'''

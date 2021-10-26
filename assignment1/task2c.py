@@ -58,9 +58,10 @@ def convolve_im(im, kernel,
     kernel_size = kernel.shape[0]
     #finding the size of the padding
     pad_size = (kernel_size-1)//2
+    kernel_flip = np.flip(kernel)
     #creating a empty array with padding
-    out_im = np.zeros(shape=(image_height+2*pad_size,image_width+2*pad_size,image_depth)) #this seems to pad it correctly when i show it
     im_conv = np.zeros(shape=(image_height+2*pad_size,image_width+2*pad_size,image_depth))
+    out_im = np.zeros(shape=(image_height+2*pad_size,image_width+2*pad_size,image_depth)).astype(float) #this seems to pad it correctly when i show it
     image_height_pad = out_im.shape[0]
     image_width_pad = out_im.shape[1]
     kernel_flip = np.flip(kernel)
@@ -70,7 +71,7 @@ def convolve_im(im, kernel,
     print('----------------------')
   
     
-    kernel_new_size = np.array([kernel]*image_depth)
+    #kernel_new_size = np.tile(kernel[:,:,None],(1,1,image_depth))
     #print(im[0:1,0:4,0:4])
     #print(kernel_new_size[0:1,0:2,0:2].shape)
     #print(kernel_new_size)
@@ -95,9 +96,9 @@ def convolve_im(im, kernel,
     #im = im/np.amax(im)
     #im = np.clip(im,0,1)
     #plt.imshow(out_im[pad_size:-pad_size,pad_size:-pad_size,:])
-    plt.imshow(im)
+    plt.imshow(im1)
     plt.show()
-    return im
+    return im1
 
 
 if __name__ == "__main__":
