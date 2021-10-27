@@ -18,6 +18,7 @@ image_transform = torchvision.transforms.Compose([
     torchvision.transforms.ToTensor(),
     
 ])
+#image transform with normalization
 image_transformN = torchvision.transforms.Compose([
     torchvision.transforms.ToTensor(),
     torchvision.transforms.Normalize(
@@ -28,11 +29,15 @@ image_transformN = torchvision.transforms.Compose([
 
 dataloader_train, dataloader_test = dataloaders.load_dataset(
     batch_size, image_transform)
-dataloader_trainN, dataloader_testN = dataloaders.load_dataset(
-    batch_size, image_transformN)
 example_images, _ = next(iter(dataloader_train))
 print(f"The tensor containing the images has shape: {example_images.shape} (batch size, number of color channels, height, width)",
-      f"The maximum value in the image is {example_images.max()}, minimum: {example_images.min()}", sep="\n\t")
+    f"The maximum value in the image is {example_images.max()}, minimum: {example_images.min()}", sep="\n\t")
+#normalized dataset
+dataloader_trainN, dataloader_testN = dataloaders.load_dataset(
+    batch_size, image_transformN)
+example_imagesN, _ = next(iter(dataloader_train))
+print(f"The tensor containing the images has shape: {example_imagesN.shape} (batch size, number of color channels, height, width)",
+      f"The maximum value in the image is {example_imagesN.max()}, minimum: {example_imagesN.min()}", sep="\n\t")
 
 
 def create_model():
@@ -41,9 +46,10 @@ def create_model():
     """
     model = nn.Sequential(
         nn.Flatten(),  # Flattens the image from shape (batch_size, C, Height, width) to (batch_size, C*height*width)
-        nn.Linear(28*28*1, 64),
-        nn.ReLU(),
-        nn.Linear(8*8*1, 10)
+        nn.Linear(28*28*1, 10),
+        #nn.Linear(28*28*1, 64),
+        #nn.ReLU(),
+        #nn.Linear(8*8*1, 10)
         # No need to include softmax, as this is already combined in the loss function
     )
     # Transfer model to GPU memory if a GPU is available
@@ -95,6 +101,11 @@ trainerN = Trainer(
 train_loss_dict, test_loss_dict = trainer.train(num_epochs)
 train_loss_dictN, test_loss_dictN = trainerN.train(num_epochs)
 
+
+#task 4b
+weight = list(model.children())[1].weight.cpu().data
+print('Weights')
+print(weight)
 # We can now plot the training loss with our utility script
 
 # Plot loss
@@ -111,7 +122,7 @@ plt.savefig("image_solutions/task_4a_norm_d.png")
 
 plt.show()
 
-torch.save(model.state_dict(), "saved_model_d.torch")
+torch.save(model.state_dict(), "saved_model_b.torch")
 final_loss, final_acc = utils.compute_loss_and_accuracy(
     dataloader_test, model, loss_function)
 print(f"Final Test loss: {final_loss}. Final Test accuracy: {final_acc}")

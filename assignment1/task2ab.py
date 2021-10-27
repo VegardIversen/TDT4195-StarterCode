@@ -46,6 +46,6 @@ def inverse(im):
     return im
 
 im_greyscale_inverse = inverse(im_greyscale)
-save_im(output_dir.joinpath("lake_greyscale_inverse.jpg"), im_greyscale, cmap="gray")
+save_im(output_dir.joinpath("lake_greyscale_inverse.jpg"), im_greyscale_inverse, cmap="gray")
 plt.imshow(im_greyscale_inverse, cmap="gray")
 #plt.show()
