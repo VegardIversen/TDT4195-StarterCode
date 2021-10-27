@@ -8,9 +8,12 @@ import utils
 import dataloaders
 import torchvision
 from trainer import Trainer
+import pathlib
 torch.random.manual_seed(0)
 np.random.seed(0)
 
+output_dir = pathlib.Path("image_solutions")
+output_dir.mkdir(exist_ok=True)
 
 # Load the dataset and print some stats
 batch_size = 64
@@ -69,8 +72,8 @@ assert output.shape == expected_shape,    f"Expected shape: {expected_shape}, bu
 
 
 # Hyperparameters
-learning_rate = .0192
-#learning_rate = 1
+#learning_rate = .0192
+learning_rate = 1
 num_epochs = 5
 
 
@@ -103,9 +106,14 @@ train_loss_dictN, test_loss_dictN = trainerN.train(num_epochs)
 
 
 #task 4b
-weight = list(model.children())[1].weight.cpu().data
-print('Weights')
-print(weight)
+# weight_image = np.zeros(shape=(28,28))
+# weight = list(model.children())[1].weight.cpu().data
+
+# for idx, w  in enumerate(weight):
+#     for i, value in enumerate(w):
+#         weight_image[i//28,i % 28] = value
+#     utils.save_im(output_dir.joinpath(f"number{idx}.jpg"), weight_image, cmap="gray")
+
 # We can now plot the training loss with our utility script
 
 # Plot loss
@@ -114,15 +122,15 @@ utils.plot_loss(test_loss_dict, label="Test Loss")
 utils.plot_loss(train_loss_dictN, label="Train Loss, normalized")
 utils.plot_loss(test_loss_dictN, label="Test Loss, normalized")
 # Limit the y-axis of the plot (The range should not be increased!)
-plt.ylim([0, 1])
+plt.ylim([0, 6])
 plt.legend()
 plt.xlabel("Global Training Step")
 plt.ylabel("Cross Entropy Loss")
-plt.savefig("image_solutions/task_4a_norm_d.png")
+plt.savefig("image_solutions/task_4c_norm_lr1_2.png")
 
 plt.show()
 
-torch.save(model.state_dict(), "saved_model_b.torch")
+torch.save(model.state_dict(), "saved_model_4c_norm_lr12.torch")
 final_loss, final_acc = utils.compute_loss_and_accuracy(
     dataloader_test, model, loss_function)
 print(f"Final Test loss: {final_loss}. Final Test accuracy: {final_acc}")
