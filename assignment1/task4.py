@@ -59,9 +59,22 @@ def create_model():
     model = utils.to_cuda(model)
     return model
 
-
+def create_model1():
+    """
+        Initializes the mode. Edit the code below if you would like to change the model.
+    """
+    model = nn.Sequential(
+        nn.Flatten(),  # Flattens the image from shape (batch_size, C, Height, width) to (batch_size, C*height*width)
+        nn.Linear(28*28*1, 64),
+        nn.ReLU(),
+        nn.Linear(8*8*1, 10)
+        # No need to include softmax, as this is already combined in the loss function
+    )
+    # Transfer model to GPU memory if a GPU is available
+    model = utils.to_cuda(model)
+    return model
 model = create_model()
-
+model1 = create_model1()
 
 # Test if the model is able to do a single forward pass
 example_images = utils.to_cuda(example_images)
@@ -72,8 +85,8 @@ assert output.shape == expected_shape,    f"Expected shape: {expected_shape}, bu
 
 
 # Hyperparameters
-#learning_rate = .0192
-learning_rate = 1
+learning_rate = .0192
+#learning_rate = 1
 num_epochs = 5
 
 
@@ -83,15 +96,16 @@ loss_function = torch.nn.CrossEntropyLoss()
 # Define optimizer (Stochastic Gradient Descent)
 optimizer = torch.optim.SGD(model.parameters(),
                             lr=learning_rate)
-
+optimizer1 = torch.optim.SGD(model1.parameters(),
+                            lr=learning_rate)
 
 trainer = Trainer(
-    model=model,
-    dataloader_train=dataloader_train,
-    dataloader_test=dataloader_test,
+    model=model1,
+    dataloader_train=dataloader_trainN,
+    dataloader_test=dataloader_testN,
     batch_size=batch_size,
     loss_function=loss_function,
-    optimizer=optimizer
+    optimizer=optimizer1
 )
 trainerN = Trainer(
     model=model,
@@ -117,20 +131,20 @@ train_loss_dictN, test_loss_dictN = trainerN.train(num_epochs)
 # We can now plot the training loss with our utility script
 
 # Plot loss
-utils.plot_loss(train_loss_dict, label="Train Loss")
-utils.plot_loss(test_loss_dict, label="Test Loss")
-utils.plot_loss(train_loss_dictN, label="Train Loss, normalized")
-utils.plot_loss(test_loss_dictN, label="Test Loss, normalized")
+utils.plot_loss(train_loss_dict, label="Train Loss-4d 64 node hidden layer")
+utils.plot_loss(test_loss_dict, label="Test Loss-4d 64 node hidden layer")
+utils.plot_loss(train_loss_dictN, label="Train Loss- 4a")
+utils.plot_loss(test_loss_dictN, label="Test Loss-4a")
 # Limit the y-axis of the plot (The range should not be increased!)
-plt.ylim([0, 6])
+plt.ylim([0, 1])
 plt.legend()
 plt.xlabel("Global Training Step")
 plt.ylabel("Cross Entropy Loss")
-plt.savefig("image_solutions/task_4c_norm_lr1_2.png")
+plt.savefig("image_solutions/task_4d.png")
 
 plt.show()
 
-torch.save(model.state_dict(), "saved_model_4c_norm_lr12.torch")
+torch.save(model.state_dict(), "saved_model_4d.torch")
 final_loss, final_acc = utils.compute_loss_and_accuracy(
     dataloader_test, model, loss_function)
 print(f"Final Test loss: {final_loss}. Final Test accuracy: {final_acc}")
