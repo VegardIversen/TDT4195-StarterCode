@@ -87,7 +87,7 @@ assert output.shape == expected_shape,    f"Expected shape: {expected_shape}, bu
 # Hyperparameters
 learning_rate = .0192
 #learning_rate = 1
-num_epochs = 5
+num_epochs = 20
 
 
 # Use CrossEntropyLoss for multi-class classification
@@ -131,20 +131,20 @@ train_loss_dictN, test_loss_dictN = trainerN.train(num_epochs)
 # We can now plot the training loss with our utility script
 
 # Plot loss
-utils.plot_loss(train_loss_dict, label="Train Loss-4d 64 node hidden layer")
-utils.plot_loss(test_loss_dict, label="Test Loss-4d 64 node hidden layer")
-utils.plot_loss(train_loss_dictN, label="Train Loss- 4a")
-utils.plot_loss(test_loss_dictN, label="Test Loss-4a")
+utils.plot_loss(train_loss_dict, label="Train Loss-20 epochs 64 node hidden layer")
+utils.plot_loss(test_loss_dict, label="Test Loss-20 epochs 64 node hidden layer")
+utils.plot_loss(train_loss_dictN, label="Train Loss- 4a 20 epochs")
+utils.plot_loss(test_loss_dictN, label="Test Loss-4a 20 epochs")
 # Limit the y-axis of the plot (The range should not be increased!)
 plt.ylim([0, 1])
 plt.legend()
 plt.xlabel("Global Training Step")
 plt.ylabel("Cross Entropy Loss")
-plt.savefig("image_solutions/task_4d.png")
+plt.savefig("image_solutions/task_4d_20epochs.png")
 
 plt.show()
 
-torch.save(model.state_dict(), "saved_model_4d.torch")
+torch.save(model.state_dict(), "saved_model_4d_20_epochs.torch")
 final_loss, final_acc = utils.compute_loss_and_accuracy(
     dataloader_test, model, loss_function)
 print(f"Final Test loss: {final_loss}. Final Test accuracy: {final_acc}")
