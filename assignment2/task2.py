@@ -26,13 +26,28 @@ print(f"The tensor containing the images has shape: {example_images.shape} (batc
       f"The maximum value in the image is {example_images.max()}, minimum: {example_images.min()}", sep="\n\t")
 
 
-def create_model():
+def create_LeNet_model():
     """
         Initializes the mode. Edit the code below if you would like to change the model.
     """
     model = nn.Sequential(
+
+        nn.Conv2d(1, 32 ,kernel_size=5, stride=1, padding=2),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+
+        nn.Conv2d(32, 64 ,kernel_size=3, stride=1, padding=1),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+
+        nn.Conv2d(64, 128 ,kernel_size=3, stride=1, padding=1),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+
         nn.Flatten(),  # Flattens the image from shape (batch_size, C, Height, width) to (batch_size, C*height*width)
-        nn.Linear(32*32*1, 10)
+        nn.Linear(32*32*2, 64),
+        nn.ReLU(),
+        nn.Linear(64,10)
         # No need to include softmax, as this is already combined in the loss function
     )
     # Transfer model to GPU memory if a GPU is available
@@ -40,7 +55,7 @@ def create_model():
     return model
 
 
-model = create_model()
+model = create_LeNet_model()
 
 
 # Test if the model is able to do a single forward pass
@@ -52,7 +67,8 @@ assert output.shape == expected_shape,    f"Expected shape: {expected_shape}, bu
 
 
 # Hyperparameters
-learning_rate = .02
+#learning_rate = .02
+learning_rate = 0.001
 num_epochs = 5
 
 
@@ -60,10 +76,10 @@ num_epochs = 5
 loss_function = torch.nn.CrossEntropyLoss()
 
 # Define optimizer (Stochastic Gradient Descent)
-optimizer = torch.optim.SGD(model.parameters(),
+#optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+
+optimizer = torch.optim.Adam(model.parameters(),
                             lr=learning_rate)
-
-
 trainer = Trainer(
     model=model,
     dataloader_train=dataloader_train,
@@ -81,11 +97,11 @@ train_loss_dict, test_loss_dict = trainer.train(num_epochs)
 utils.plot_loss(train_loss_dict, label="Train Loss")
 utils.plot_loss(test_loss_dict, label="Test Loss")
 # Limit the y-axis of the plot (The range should not be increased!)
-plt.ylim([0, .5])
+plt.ylim([0, .1])
 plt.legend()
 plt.xlabel("Global Training Step")
 plt.ylabel("Cross Entropy Loss")
-plt.savefig(utils.image_output_dir.joinpath("task2a_plot.png"))
+plt.savefig(utils.image_output_dir.joinpath("task2b_plot.png"))
 plt.show()
 
 final_loss, final_acc = utils.compute_loss_and_accuracy(
