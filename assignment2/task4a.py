@@ -35,10 +35,12 @@ def convolve_im(im: np.array,
     fft = np.abs(np.fft.fftshift(fft))
     #fft = amplitude(fft)
     filt_fft_im = np.abs(np.fft.fftshift(filt_fft_im))
-    fft_kernel = np.abs(np.fft.fftshift(fft_kernel))
-    fft_kernel = np.log(fft_kernel + 1)
+    #fft_kernel = np.abs(np.fft.fftshift(fft_kernel))
+
     filt_fft_im = np.log(filt_fft_im + 1)
     fft = np.log(fft + 1)
+
+    #fft_kernel = np.log(fft_kernel + 1)
     #filt_fft_im = amplitude(filt_fft_im)
     if verbose:
         # Use plt.subplot to place two or more images beside eachother
@@ -51,7 +53,7 @@ def convolve_im(im: np.array,
         plt.imshow(fft)
         plt.subplot(1, 5, 3)
         # Visualize FFT kernel
-        plt.imshow(fft_kernel)
+        plt.imshow(np.log(np.abs(np.fft.fftshift(fft_kernel))+1))
         plt.subplot(1, 5, 4)
         # Visualize filtered FFT image
         plt.imshow(filt_fft_im)
@@ -62,9 +64,9 @@ def convolve_im(im: np.array,
 
         #if the kernel[0][0] is 0 its a lowpass filter, and highpass if 1
         if (fft_kernel[0][0] == 1.0):
-            plt.savefig(utils.image_output_dir.joinpath("task4a_highpass3.png"))
+            plt.savefig(utils.image_output_dir.joinpath("task4a_highpass_corr.png"))
         elif (fft_kernel[0][0] == 0.0):
-            plt.savefig(utils.image_output_dir.joinpath("task4a_lowpass3.png"))
+            plt.savefig(utils.image_output_dir.joinpath("task4a_lowpass_corr.png"))
         else:
             print("Unknown type")
 
@@ -91,5 +93,5 @@ if __name__ == "__main__":
 
     if verbose:
         plt.show()
-    utils.save_im("camera_low_pass.png", image_low_pass)
-    utils.save_im("camera_high_pass.png", image_high_pass)
+    utils.save_im("camera_low_pass_corr.png", image_low_pass)
+    utils.save_im("camera_high_pass_corr.png", image_high_pass)
