@@ -31,15 +31,8 @@ def create_binary_image(im):
         [np.ndarray, np.bool]: [A binary image]
     """
 
-    f = np.fft.fft2(im)
-    fshift = np.fft.fftshift(f)
-    magnitude_spectrum = 20*np.log(np.abs(fshift))
-
-    # fig, ax = try_all_threshold(magnitude_spectrum, figsize=(10, 6), verbose=False)
-    # plt.show()
-
-    thresh = threshold_yen(magnitude_spectrum)
-    binary_im = magnitude_spectrum > thresh
+    # START YOUR CODE HERE ### (You can change anything inside this block) 
+    binary_im = np.zeros_like(im, dtype=np.bool)
 
     ### END YOUR CODE HERE ###
     return binary_im
