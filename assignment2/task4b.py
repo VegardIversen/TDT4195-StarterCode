@@ -21,8 +21,14 @@ def convolve_im(im: np.array,
         im: np.array of shape [H, W]
     """
     # START YOUR CODE HERE ### (You can change anything inside this block)
+    #need to pad the kernel to match the image
+    height, width = im.shape
+    k_height, k_width = kernel.shape
+    kernel = np.pad(kernel, ((0,height-k_height),(0,width-k_width)), mode='constant')
     #from equation 4 in assignment
     fft_kernel = np.fft.fft2(kernel)
+    #need to pad the kernel to match the image
+
     #fft_kernel = np.fft.fftshift(fft_kernel)
     fft = np.fft.fft2(im)
     filt_fft_im = fft * fft_kernel
@@ -59,9 +65,9 @@ def convolve_im(im: np.array,
 
         #if the kernel[0][0] is 0 its a lowpass filter, and highpass if 1
         if (fft_kernel[0][0] == 1.0):
-            plt.savefig(utils.image_output_dir.joinpath("task4b_highpass.png"))
+            plt.savefig(utils.image_output_dir.joinpath("task4b_gaussian.png"))
         elif (fft_kernel[0][0] == 0.0):
-            plt.savefig(utils.image_output_dir.joinpath("task4b_lowpass.png"))
+            plt.savefig(utils.image_output_dir.joinpath("task4b_sobel.png"))
         else:
             print("Unknown type")
 
@@ -76,7 +82,7 @@ if __name__ == "__main__":
     # Changing this code should not be needed
     im = skimage.data.camera()
     im = utils.uint8_to_float(im)
-
+    utils.save_im("cameraman.png", im)
     # DO NOT CHANGE
     gaussian_kernel = np.array([
         [1, 4, 6, 4, 1],
