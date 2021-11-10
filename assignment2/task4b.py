@@ -23,7 +23,7 @@ def convolve_im(im: np.array,
     # START YOUR CODE HERE ### (You can change anything inside this block)
     #from equation 4 in assignment
     fft_kernel = np.fft.fft2(kernel)
-    fft_kernel = np.fft.fftshift(fft_kernel)
+    #fft_kernel = np.fft.fftshift(fft_kernel)
     fft = np.fft.fft2(im)
     filt_fft_im = fft * fft_kernel
     conv_result = np.fft.ifft2(filt_fft_im).real
@@ -34,8 +34,8 @@ def convolve_im(im: np.array,
     #fft = amplitude(fft)
     filt_fft_im = np.abs(np.fft.fftshift(filt_fft_im))
 
-    #filt_fft_im = np.log(filt_fft_im + 1)
-    #fft = np.log(fft + 1)
+    filt_fft_im = np.log(filt_fft_im + 1)
+    fft = np.log(fft + 1)
     #filt_fft_im = amplitude(filt_fft_im)
     if verbose:
         # Use plt.subplot to place two or more images beside eachother
@@ -48,7 +48,7 @@ def convolve_im(im: np.array,
         plt.imshow(fft)
         plt.subplot(1, 5, 3)
         # Visualize FFT kernel
-        plt.imshow(fft_kernel)
+        plt.imshow(np.log(np.abs(np.fft.fftshift(fft_kernel))+1))
         plt.subplot(1, 5, 4)
         # Visualize filtered FFT image
         plt.imshow(filt_fft_im)
