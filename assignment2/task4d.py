@@ -1,6 +1,10 @@
 import skimage
 import skimage.io
 import skimage.transform
+import skimage.filters
+from skimage.filters import threshold_yen
+from skimage.filters import threshold_minimum
+from skimage.filters import try_all_threshold
 import pathlib
 import numpy as np
 import utils
@@ -15,6 +19,7 @@ impaths = [
     image_dir.joinpath("page8.png"),
 ]
 
+print(impaths)
 
 def create_binary_image(im):
     """Creates a binary image from a greyscale image "im"
@@ -26,8 +31,16 @@ def create_binary_image(im):
         [np.ndarray, np.bool]: [A binary image]
     """
 
-    # START YOUR CODE HERE ### (You can change anything inside this block)
-    binary_im = np.zeros_like(im, dtype=np.bool)
+    f = np.fft.fft2(im)
+    fshift = np.fft.fftshift(f)
+    magnitude_spectrum = 20*np.log(np.abs(fshift))
+
+    # fig, ax = try_all_threshold(magnitude_spectrum, figsize=(10, 6), verbose=False)
+    # plt.show()
+
+    thresh = threshold_yen(magnitude_spectrum)
+    binary_im = magnitude_spectrum > thresh
+
     ### END YOUR CODE HERE ###
     return binary_im
 
