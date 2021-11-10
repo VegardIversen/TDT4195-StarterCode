@@ -6,6 +6,7 @@ import numpy as np
 import utils
 import dataloaders
 import torchvision
+from torchsummary import summary
 from trainer import Trainer
 torch.random.manual_seed(0)
 np.random.seed(0)
@@ -57,7 +58,7 @@ def create_LeNet_model():
 
 model = create_LeNet_model()
 
-
+summary(model, (1,32,32))
 # Test if the model is able to do a single forward pass
 example_images = utils.to_cuda(example_images)
 output = model(example_images)
@@ -67,8 +68,8 @@ assert output.shape == expected_shape,    f"Expected shape: {expected_shape}, bu
 
 
 # Hyperparameters
-#learning_rate = .02
-learning_rate = 0.001
+learning_rate = .02
+#learning_rate = 0.001
 num_epochs = 5
 
 
@@ -76,10 +77,10 @@ num_epochs = 5
 loss_function = torch.nn.CrossEntropyLoss()
 
 # Define optimizer (Stochastic Gradient Descent)
-#optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 
-optimizer = torch.optim.Adam(model.parameters(),
-                            lr=learning_rate)
+#optimizer = torch.optim.Adam(model.parameters(),
+#                            lr=learning_rate)
 trainer = Trainer(
     model=model,
     dataloader_train=dataloader_train,
@@ -97,13 +98,52 @@ train_loss_dict, test_loss_dict = trainer.train(num_epochs)
 utils.plot_loss(train_loss_dict, label="Train Loss")
 utils.plot_loss(test_loss_dict, label="Test Loss")
 # Limit the y-axis of the plot (The range should not be increased!)
-plt.ylim([0, .1])
+plt.ylim([0, .5])
 plt.legend()
 plt.xlabel("Global Training Step")
 plt.ylabel("Cross Entropy Loss")
-plt.savefig(utils.image_output_dir.joinpath("task2b_plot.png"))
+plt.savefig(utils.image_output_dir.joinpath("task2aV22_plot.png"))
 plt.show()
-
+plt.clf()
 final_loss, final_acc = utils.compute_loss_and_accuracy(
     dataloader_test, model, loss_function)
 print(f"Final Test loss: {final_loss}. Final Test accuracy: {final_acc}")
+
+print('Task 2b')
+
+learning_rateb = 0.001
+
+
+
+# Define optimizer (Stochastic Gradient Descent)
+
+
+optimizerb = torch.optim.Adam(model.parameters(),
+                            lr=learning_rateb)
+trainerb = Trainer(
+    model=model,
+    dataloader_train=dataloader_train,
+    dataloader_test=dataloader_test,
+    batch_size=batch_size,
+    loss_function=loss_function,
+    optimizer=optimizerb
+)
+train_loss_dictb, test_loss_dictb = trainerb.train(num_epochs)
+
+
+# We can now plot the training loss with our utility script
+
+# Plot loss
+utils.plot_loss(train_loss_dictb, label="Train Loss")
+utils.plot_loss(test_loss_dictb, label="Test Loss")
+# Limit the y-axis of the plot (The range should not be increased!)
+plt.ylim([0, 1])
+plt.legend()
+plt.xlabel("Global Training Step")
+plt.ylabel("Cross Entropy Loss")
+plt.savefig(utils.image_output_dir.joinpath("task2bV22_plot.png"))
+plt.show()
+
+final_lossb, final_accb = utils.compute_loss_and_accuracy(
+    dataloader_test, model, loss_function)
+print(f"Final Test loss: {final_lossb}. Final Test accuracy: {final_accb}")
