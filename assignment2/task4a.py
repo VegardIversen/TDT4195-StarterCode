@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy.fft.helper import fftshift
 import skimage
 import utils
 
@@ -34,7 +35,8 @@ def convolve_im(im: np.array,
     fft = np.abs(np.fft.fftshift(fft))
     #fft = amplitude(fft)
     filt_fft_im = np.abs(np.fft.fftshift(filt_fft_im))
-
+    fft_kernel = np.abs(np.fft.fftshift(fft_kernel))
+    fft_kernel = np.log(fft_kernel + 1)
     filt_fft_im = np.log(filt_fft_im + 1)
     fft = np.log(fft + 1)
     #filt_fft_im = amplitude(filt_fft_im)
@@ -60,9 +62,9 @@ def convolve_im(im: np.array,
 
         #if the kernel[0][0] is 0 its a lowpass filter, and highpass if 1
         if (fft_kernel[0][0] == 1.0):
-            plt.savefig(utils.image_output_dir.joinpath("task4a_highpass2.png"))
+            plt.savefig(utils.image_output_dir.joinpath("task4a_highpass3.png"))
         elif (fft_kernel[0][0] == 0.0):
-            plt.savefig(utils.image_output_dir.joinpath("task4a_lowpass2.png"))
+            plt.savefig(utils.image_output_dir.joinpath("task4a_lowpass3.png"))
         else:
             print("Unknown type")
 
