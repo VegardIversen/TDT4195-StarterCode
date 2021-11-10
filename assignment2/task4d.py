@@ -26,8 +26,9 @@ def create_binary_image(im):
         [np.ndarray, np.bool]: [A binary image]
     """
 
-    # START YOUR CODE HERE ### (You can change anything inside this block)
+    # START YOUR CODE HERE ### (You can change anything inside this block) 
     binary_im = np.zeros_like(im, dtype=np.bool)
+
     ### END YOUR CODE HERE ###
     return binary_im
 
