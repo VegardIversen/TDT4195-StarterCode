@@ -36,6 +36,7 @@ if __name__ == "__main__":
 
 
     plt.imshow(np.log(np.abs(kernel)+1), cmap='gray')
+    plt.show()
     plt.savefig(utils.image_output_dir.joinpath("4c_test2.png"))
     plt.clf()
     #shifting the kernel
