@@ -2,6 +2,7 @@ import utils
 import skimage
 import skimage.morphology
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def remove_noise(im: np.ndarray) -> np.ndarray:
@@ -14,6 +15,52 @@ def remove_noise(im: np.ndarray) -> np.ndarray:
     """
     # START YOUR CODE HERE ### (You can change anything inside this block)
     # You can also define other helper functions
+
+
+    # create figure
+    fig = plt.figure(figsize=(10, 7))
+
+    # setting values to rows and column variables
+    rows = 1
+    columns = 2
+
+
+    # fig, axs= plt.subplot(nrows=1, ncols=2)
+
+    # Adds a subplot at the 1st position
+    fig.add_subplot(rows, columns, 1)
+
+    # showing image
+    plt.imshow(im)
+    plt.axis('off')
+    plt.title("original")
+
+    # Adds a subplot at the 2nd position
+    fig.add_subplot(rows, columns, 2)
+
+
+    # axs[0].imshow(im)
+    # imgplot = plt.imshow(im)
+
+    print(np.ones((3,3)))
+
+    im = skimage.morphology.binary_closing(im, selem=np.ones((20, 20))).astype(np.int)
+    im = skimage.morphology.binary_erosion(im, selem=np.ones((8, 8))).astype(np.int)
+    im = skimage.morphology.binary_erosion(im, selem=np.ones((8, 8))).astype(np.int)
+    im = skimage.morphology.binary_dilation(im, selem=np.ones((8, 8))).astype(np.int)
+    # im = skimage.morphology.binary_closing(im, selem=np.ones((8, 8))).astype(np.int)
+    # im = skimage.morphology.area_closing(im, area_threshold=200)
+    # im = skimage.morphology.
+    # axs[1].imshow(im)
+
+    # showing image
+    plt.imshow(im)
+    plt.axis('off')
+
+    plt.title("prosessed")
+
+    plt.show()
+    # plt.show()
     return im
     ### END YOUR CODE HERE ###
 
