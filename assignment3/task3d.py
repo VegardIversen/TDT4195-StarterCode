@@ -1,3 +1,4 @@
+from skimage.morphology import selem
 import utils
 import skimage
 import skimage.morphology
@@ -6,14 +7,14 @@ import numpy as np
 
 def fill_holes(im: np.ndarray, starting_points: list, num_iterations: int) -> np.ndarray:
     """
-        A function that takes a binary image (im),  and a set of points 
+        A function that takes a binary image (im),  and a set of points
         indicating position of holes, and fills the holes.
 
         args:
             im: np.ndarray of shape (H, W) with boolean values (dtype=np.bool)
             starting_points: list of list containing starting points (row, col). Ex:
                 [[row1, col1], [row2, col2], ...]
-            num_iterations: integer defining the number of iterations to apply the 
+            num_iterations: integer defining the number of iterations to apply the
                             hole filling algorithm
         return:
             (np.ndarray) of shape (H, W). dtype=np.bool
@@ -25,8 +26,19 @@ def fill_holes(im: np.ndarray, starting_points: list, num_iterations: int) -> np
         [1, 1, 1],
         [1, 1, 1]
     ], dtype=bool)
+
     result = im.copy()
-    return result
+    result = 0*result
+
+    for row, col in starting_points:
+        result[row,col] = 1
+
+    for k in range(num_iterations):
+        result = skimage.morphology.binary_dilation(result, selem=structuring_element)*np.invert(im)
+
+    result += im
+
+    return result.astype(bool)
     ### END YOUR CODE HERE ###
 
 
@@ -57,7 +69,7 @@ if __name__ == "__main__":
 
     assert im.shape == result.shape, "Expected image shape ({}) to be same as resulting image shape ({})".format(
         im.shape, result.shape)
-    assert result.dtype == np.bool, "Expected resulting image dtype to be np.bool. Was: {}".format(
+    assert result.dtype == bool, "Expected resulting image dtype to be np.bool. Was: {}".format(
         result.dtype)
 
     result = utils.to_uint8(result)
