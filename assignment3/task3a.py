@@ -24,9 +24,6 @@ def remove_noise(im: np.ndarray) -> np.ndarray:
     rows = 1
     columns = 2
 
-
-    # fig, axs= plt.subplot(nrows=1, ncols=2)
-
     # Adds a subplot at the 1st position
     fig.add_subplot(rows, columns, 1)
 
@@ -61,7 +58,7 @@ def remove_noise(im: np.ndarray) -> np.ndarray:
 
     plt.title("prosessed")
 
-    plt.show()
+    # plt.show()
     # plt.show()
     return im
     ### END YOUR CODE HERE ###
