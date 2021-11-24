@@ -19,6 +19,9 @@ def otsu_thresholding(im: np.ndarray) -> int:
     # You can also define other helper functions
     # Compute normalized histogram
     int_range = im.max()-im.min()+1
+    #int_range = im.max() // 2
+    print(int_range)
+    #int_range = 90
     hist, bins = np.histogram(im, bins=int_range)
     #normalizing histogram
     num_pixel = im.shape[0]*im.shape[1] #size of the image
@@ -42,9 +45,10 @@ def otsu_thresholding(im: np.ndarray) -> int:
             ks.append(k)
     threshold = np.sum(ks)/len(ks)
 
-    #need to add the im.min()
+    #need to add the im.min(), to compensate for arrays starting at 0 and not im.min
     threshold += im.min()
     #threshold = 128 #a bit unsure if i should have used this as k earlier 
+    #threshold = 90 + im.min()
     return threshold
     ### END YOUR CODE HERE ###
 
@@ -53,7 +57,9 @@ if __name__ == "__main__":
     # DO NOT CHANGE
     impaths_to_segment = [
         pathlib.Path("thumbprint.png"),
-        pathlib.Path("polymercell.png")
+        pathlib.Path("polymercell.png"),
+        pathlib.Path("defective-weld.png")
+        
     ]
     for impath in impaths_to_segment:
         im = utils.read_image(impath)

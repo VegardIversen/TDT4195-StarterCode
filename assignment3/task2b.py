@@ -1,6 +1,11 @@
 import utils
 import numpy as np
 
+#https://en.wikipedia.org/wiki/Moore_neighborhood
+
+
+
+        
 
 def region_growing(im: np.ndarray, seed_points: list, T: int) -> np.ndarray:
     """
@@ -16,13 +21,57 @@ def region_growing(im: np.ndarray, seed_points: list, T: int) -> np.ndarray:
             T: integer value defining the threshold to used for the homogeneity criteria.
         return:
             (np.ndarray) of shape (H, W). dtype=np.bool
+
+        Task:
+            8 connectedness
+             _ _ _
+            |NW|N|NE|
+            |W |C| E|
+            |SW|S|SE|
     """
     # START YOUR CODE HERE ### (You can change anything inside this block)
     # You can also define other helper functions
     segmented = np.zeros_like(im).astype(bool)
     im = im.astype(float)
+    def neighboorhood(seed_point,row,col): #having the function here so i can use the image and T without having it as parameters 
+        #iterate over rows and cols
+        N = 3 #NxN matrise
+        for i in range(-1,2):
+            for j in range(-1,2):
+                #skipping center point
+                if (i == 0 and j == 0):
+                    continue
+                #handling for boundries 
+                if(row + 1 < 0 or row + i >= im.shape[0] or col + j < 0 or col + j >= im.shape[1]):
+                    continue
+
+                if(not segmented[row + i, col +j]):
+                    if(np.abs(im[row+i, col+j]-seed_point)<T):
+                        segmented[row+i,col+j] = True
+                        neighboorhood(seed_point,row+1,col+1)
+
+    def visit_pixel(seed_point_value, row, col):
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                # Skip the calling pixel
+                if(i == 0 and j == 0):
+                    continue
+                # Handle out of bounds on image borders
+                if(row + i < 0 or row + i >= im.shape[0] or col + j < 0 or col + j >= im.shape[1]):
+                    continue
+
+                # Skip already found pixels
+                if(not segmented[row + i, col + j]):
+                    # Calculate if this pixel should be taken into account or not
+                    if(abs(im[row + i, col + j] - seed_point_value) < T):
+                        segmented[row + i, col + j] = True
+                        visit_pixel(seed_point_value, row + i, col + j)
+
+
     for row, col in seed_points:
         segmented[row, col] = True
+        #neighboorhood(im[row,col],row,col)
+        visit_pixel(im[row, col], row, col)
     return segmented
     ### END YOUR CODE HERE ###
 
