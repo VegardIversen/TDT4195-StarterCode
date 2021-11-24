@@ -18,7 +18,33 @@ def otsu_thresholding(im: np.ndarray) -> int:
     # START YOUR CODE HERE ### (You can change anything inside this block)
     # You can also define other helper functions
     # Compute normalized histogram
-    threshold = 128
+    int_range = im.max()-im.min()+1
+    hist, bins = np.histogram(im, bins=int_range)
+    #normalizing histogram
+    num_pixel = im.shape[0]*im.shape[1] #size of the image
+    hist_norm = hist/num_pixel
+
+    cum_sums= np.cumsum(hist_norm)
+    #calculating the means
+    cum_means = np.zeros(int_range)
+
+    for i in range(1,len(hist_norm)):
+        cum_means[i] = cum_means[i-1] + i*hist_norm[i]  #this will make both m_G and m(k)
+
+    m_G = cum_means[-1] #global mean
+
+    theta_b_sq = (m_G*cum_sums - cum_means)**2 / (cum_sums*(1-cum_sums))
+    #finding the maximum values between classes
+    max_val = np.max(theta_b_sq)
+    ks = []
+    for k, val  in enumerate(theta_b_sq):
+        if(val ==max_val):
+            ks.append(k)
+    threshold = np.sum(ks)/len(ks)
+
+    #need to add the im.min()
+    threshold += im.min()
+    #threshold = 128 #a bit unsure if i should have used this as k earlier 
     return threshold
     ### END YOUR CODE HERE ###
 
