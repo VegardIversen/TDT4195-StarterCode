@@ -44,7 +44,7 @@ def otsu_thresholding(im: np.ndarray) -> int:
             theta_b_sq.append((m_G*cum_sum - cum_means[idx])**2 / (cum_sum*(1-cum_sum)))
 
 
-    #theta_b_sq = (m_G*cum_sums - cum_means)**2 / (cum_sums*(1-cum_sums))
+    #theta_b_sq = (m_G*cum_sums - cum_means)**2 / (cum_sums*(1-cum_sums)) #gets some error because of divison by 0
     
     #finding the maximum values between classes
     max_val = np.max(theta_b_sq)
@@ -57,7 +57,6 @@ def otsu_thresholding(im: np.ndarray) -> int:
     #need to add the im.min(), to compensate for arrays starting at 0 and not im.min
     threshold += im.min()
     #threshold = 128 #a bit unsure if i should have used this as k earlier 
-    #threshold = 90 + im.min()
     return threshold
     ### END YOUR CODE HERE ###
 

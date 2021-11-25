@@ -33,39 +33,22 @@ def region_growing(im: np.ndarray, seed_points: list, T: int) -> np.ndarray:
     # You can also define other helper functions
     segmented = np.zeros_like(im).astype(bool)
     im = im.astype(float)
-    def neighboorhood(seed_point,row,col): #having the function here so i can use the image and T without having it as parameters 
-        #iterate over rows and cols
-        #N = 3 #NxN matrise, 
-        #starting from -1 so that 0 is the center
-        for i in range(-1,2):
-            for j in range(-1,2):
-                #skipping center point
-                if (i == 0 and j == 0):
-                    continue
-                #handling for boundries 
-                if(row + i < 0 or row + i >= im.shape[0] or col + j < 0 or col + j >= im.shape[1]):
-                    continue
-
-                #if the cell we are visiting are not visited[False] and the value at this point is larger than the threshold
-                # will we set that cell to True and visit that cell
-                #problem here since the lowest i and j value is 0 so we cant check the previous NW etc
-
-                if(not segmented[row + i, col +j] and abs(im[row + i, col + j]-seed_point) < T):
-                    segmented[row + i, col + j] = True
-                    neighboorhood(seed_point,row+i,col+j)
     
 
-
     for row, col in seed_points:
-        #segmented[row, col] = True
-        #neighboorhood(im[row,col],row,col)
-        seed_point = im[row,col]
+        #did it with recursion to since it seems to be a good recursion task, but got error when i changed to threshold to 90 because of to many recursion calls, could prob change some settings for this
+        seed_point = im[row,col] #storing the seed_point value
+        #list for pixels that are connected and above the threshold. the first one might not be over but will be pop and not the segmented will then not be true
         connected_pixel = [[row,col]]
+
         while  (len(connected_pixel) > 0): #as long as its not empty
-            cell = connected_pixel.pop()
-            for i in range(cell[0]-1,cell[0]+2):
-                for j in range(cell[1]-1,cell[1]+2):
+            r, c = connected_pixel.pop()
+            #going through the the 8 positions
+            for i in range(r-1,r+2):
+                for j in range(c-1,c+2):
                     #boundries
+                    if(i == r and j == c): #no point of checking the middle value. Unsure if having a check is more worth than just running every pixel
+                        continue
                     if (i >= 0 and j >= 0 and i < im.shape[0] and j < im.shape[1]):
                         if (not segmented[i, j] and abs(im[i, j]-seed_point) < T):
                             connected_pixel.append([i,j])
@@ -86,7 +69,7 @@ if __name__ == "__main__":
         [233, 436],  # Seed point 3
         [232, 417],  # Seed point 4
     ]
-    intensity_threshold = 90
+    intensity_threshold = 50
     segmented_image = region_growing(im, seed_points, intensity_threshold)
 
     assert im.shape == segmented_image.shape, "Expected image shape ({}) to be same as thresholded image shape ({})".format(
@@ -95,4 +78,4 @@ if __name__ == "__main__":
         segmented_image.dtype)
 
     segmented_image = utils.to_uint8(segmented_image)
-    utils.save_im("defective-weld-segmented90.png", segmented_image)
+    utils.save_im("defective-weld-segmented4.png", segmented_image)
