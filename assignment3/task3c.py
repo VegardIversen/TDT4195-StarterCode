@@ -21,7 +21,8 @@ def extract_boundary(im: np.ndarray) -> np.ndarray:
         [1, 1, 1]
     ], dtype=bool)
 
-    im = im * np.invert(skimage.morphology.binary_erosion(im, selem=structuring_element))
+    # im = im * np.invert(skimage.morphology.binary_erosion(im, selem=structuring_element))
+    im = im.astype(bool) ^ skimage.morphology.binary_erosion(im, selem=structuring_element).astype(bool)
 
     boundary = im
 

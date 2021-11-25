@@ -35,22 +35,11 @@ def remove_noise(im: np.ndarray) -> np.ndarray:
     # Adds a subplot at the 2nd position
     fig.add_subplot(rows, columns, 2)
 
-
-    # axs[0].imshow(im)
-    # imgplot = plt.imshow(im)
-
     print(np.ones((3,3)))
 
     im = skimage.morphology.binary_closing(im, selem=skimage.morphology.selem.disk(8))
     im = skimage.morphology.binary_erosion(im, selem=skimage.morphology.selem.disk(8))
     im = skimage.morphology.binary_dilation(im, selem=skimage.morphology.selem.disk(2))
-    # im = skimage.morphology.binary_erosion(im, selem=np.ones((8, 8))).astype(np.int)
-    # im = skimage.morphology.binary_erosion(im, selem=np.ones((8, 8))).astype(np.int)
-    # im = skimage.morphology.binary_dilation(im, selem=np.ones((8, 8))).astype(np.int)
-    # im = skimage.morphology.binary_closing(im, selem=np.ones((8, 8))).astype(np.int)
-    # im = skimage.morphology.area_closing(im, area_threshold=200)
-    # im = skimage.morphology.
-    # axs[1].imshow(im)
 
     # showing image
     plt.imshow(im)
@@ -58,8 +47,6 @@ def remove_noise(im: np.ndarray) -> np.ndarray:
 
     plt.title("prosessed")
 
-    # plt.show()
-    # plt.show()
     return im
     ### END YOUR CODE HERE ###
 
