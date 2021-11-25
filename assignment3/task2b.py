@@ -35,43 +35,43 @@ def region_growing(im: np.ndarray, seed_points: list, T: int) -> np.ndarray:
     im = im.astype(float)
     def neighboorhood(seed_point,row,col): #having the function here so i can use the image and T without having it as parameters 
         #iterate over rows and cols
-        N = 3 #NxN matrise
+        #N = 3 #NxN matrise, 
+        #starting from -1 so that 0 is the center
         for i in range(-1,2):
             for j in range(-1,2):
                 #skipping center point
                 if (i == 0 and j == 0):
                     continue
                 #handling for boundries 
-                if(row + 1 < 0 or row + i >= im.shape[0] or col + j < 0 or col + j >= im.shape[1]):
-                    continue
-
-                if(not segmented[row + i, col +j]):
-                    if(np.abs(im[row+i, col+j]-seed_point)<T):
-                        segmented[row+i,col+j] = True
-                        neighboorhood(seed_point,row+1,col+1)
-
-    def visit_pixel(seed_point_value, row, col):
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                # Skip the calling pixel
-                if(i == 0 and j == 0):
-                    continue
-                # Handle out of bounds on image borders
                 if(row + i < 0 or row + i >= im.shape[0] or col + j < 0 or col + j >= im.shape[1]):
                     continue
 
-                # Skip already found pixels
-                if(not segmented[row + i, col + j]):
-                    # Calculate if this pixel should be taken into account or not
-                    if(abs(im[row + i, col + j] - seed_point_value) < T):
-                        segmented[row + i, col + j] = True
-                        visit_pixel(seed_point_value, row + i, col + j)
+                #if the cell we are visiting are not visited[False] and the value at this point is larger than the threshold
+                # will we set that cell to True and visit that cell
+                #problem here since the lowest i and j value is 0 so we cant check the previous NW etc
+
+                if(not segmented[row + i, col +j] and abs(im[row + i, col + j]-seed_point) < T):
+                    segmented[row + i, col + j] = True
+                    neighboorhood(seed_point,row+i,col+j)
+    
 
 
     for row, col in seed_points:
-        segmented[row, col] = True
+        #segmented[row, col] = True
         #neighboorhood(im[row,col],row,col)
-        visit_pixel(im[row, col], row, col)
+        seed_point = im[row,col]
+        connected_pixel = [[row,col]]
+        while  (len(connected_pixel) > 0): #as long as its not empty
+            cell = connected_pixel.pop()
+            for i in range(cell[0]-1,cell[0]+2):
+                for j in range(cell[1]-1,cell[1]+2):
+                    #boundries
+                    if (i >= 0 and j >= 0 and i < im.shape[0] and j < im.shape[1]):
+                        if (not segmented[i, j] and abs(im[i, j]-seed_point) < T):
+                            connected_pixel.append([i,j])
+                            segmented[i,j] = True
+
+
     return segmented
     ### END YOUR CODE HERE ###
 
@@ -86,7 +86,7 @@ if __name__ == "__main__":
         [233, 436],  # Seed point 3
         [232, 417],  # Seed point 4
     ]
-    intensity_threshold = 50
+    intensity_threshold = 90
     segmented_image = region_growing(im, seed_points, intensity_threshold)
 
     assert im.shape == segmented_image.shape, "Expected image shape ({}) to be same as thresholded image shape ({})".format(
@@ -95,4 +95,4 @@ if __name__ == "__main__":
         segmented_image.dtype)
 
     segmented_image = utils.to_uint8(segmented_image)
-    utils.save_im("defective-weld-segmented.png", segmented_image)
+    utils.save_im("defective-weld-segmented90.png", segmented_image)

@@ -35,8 +35,17 @@ def otsu_thresholding(im: np.ndarray) -> int:
         cum_means[i] = cum_means[i-1] + i*hist_norm[i]  #this will make both m_G and m(k)
 
     m_G = cum_means[-1] #global mean
+    theta_b_sq = []
+    #have to use iteration so that its not devided by 0
+    for idx, cum_sum in enumerate(cum_sums):
+        if cum_sum == 1 or cum_sum == 0:
+            theta_b_sq.append(0.0)
+        else:
+            theta_b_sq.append((m_G*cum_sum - cum_means[idx])**2 / (cum_sum*(1-cum_sum)))
 
-    theta_b_sq = (m_G*cum_sums - cum_means)**2 / (cum_sums*(1-cum_sums))
+
+    #theta_b_sq = (m_G*cum_sums - cum_means)**2 / (cum_sums*(1-cum_sums))
+    
     #finding the maximum values between classes
     max_val = np.max(theta_b_sq)
     ks = []
